@@ -8,7 +8,7 @@ resource "aws_instance" "web" {
   subnet_id = aws_subnet.private[0].id
 
   vpc_security_group_ids = [
-    aws_security_group.sg.id
+    aws_security_group.web.id
   ]
 
   iam_instance_profile = aws_iam_instance_profile.ssm.name

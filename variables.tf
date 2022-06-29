@@ -27,7 +27,7 @@ variable "azs" {
   default = ["ap-northeast-1c", "ap-northeast-1d"]
 }
 
-# パブリックサブネットのレンジ。azsと同じ数にする必要あり
+# プライベートサブネットのレンジ。azsと同じ数にする必要あり
 variable "private_subnets" {
   type    = list
   default = ["10.0.0.0/24", "10.0.1.0/24"]

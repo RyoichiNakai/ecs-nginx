@@ -1,6 +1,6 @@
 # ターゲットグループ
 resource "aws_lb_target_group" "www" {
-  name             = "${var.service_name}-www"
+  name             = "default-www"
   port             = 80
   protocol         = "HTTP"
   target_type      = "ip"
@@ -47,13 +47,13 @@ resource "aws_lb_target_group" "www" {
 
 # ALB
 resource "aws_lb" "www" {
-  name               = "${var.service_name}-www"
+  name               = "default-www"
   internal           = false # 内部で使用しないため無効。
   load_balancer_type = "application"
   ip_address_type    = "ipv4" 
 
   security_groups = [
-    aws_security_group.sg.id
+    aws_security_group.alb.id
   ]
 
   subnets = [for s in aws_subnet.public : s.id]

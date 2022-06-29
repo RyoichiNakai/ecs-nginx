@@ -43,12 +43,13 @@ resource "aws_subnet" "private" {
 # EC2とELBのSGを併用しているので、プロトコルの指定のみを行う
 # 本来であれば、ECS(EC2)用のSGとALBのSGは分けるべき
 # ALBのSGもしくはEIPからのアクセスしかできないようにする設定が必要
-resource "aws_security_group" "sg" {
-  name   = "public-sg"
+# alb
+resource "aws_security_group" "alb" {
+  name   = "alb-security-group"
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name    = "public-sg"
+    Name    = "alb-security-group"
     Service = var.service_name
   }
 
@@ -59,30 +60,38 @@ resource "aws_security_group" "sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
+  egress {
     from_port   = 0
-    to_port     = 443
-    protocol    = "TCP"
+    to_port     = 0
+    protocol    = -1
     cidr_blocks = ["0.0.0.0/0"]
   }
+}
 
-  # NATのEIP
+# web
+resource "aws_security_group" "web" {
+  name   = "web-security-group"
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name    = "web-security-group"
+    Service = var.service_name
+  }
+
   ingress {
-    from_port   = 0
-    to_port     = 80
-    protocol    = "TCP"
-    cidr_blocks = ["${aws_eip.ngw_eip[0].public_ip}/32"] # NAT GWのElastic IP
+    from_port       = 0
+    to_port         = 80
+    protocol        = "TCP"
+    security_groups = [
+      aws_security_group.alb.id
+    ]
   }
 
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "-1"
+    protocol    = -1
     cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  lifecycle {
-    create_before_destroy = true
   }
 }
 

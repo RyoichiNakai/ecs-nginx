@@ -1,6 +1,6 @@
 # ECSクラスター
 resource "aws_ecs_cluster" "www_cluster" {
-  name = "www_cluster"
+  name = "default"
 
   setting {
     name  = "containerInsights"
@@ -102,7 +102,7 @@ resource "aws_ecs_service" "nginx" {
   # ネットワークの設定
   network_configuration {
     subnets          = [for s in aws_subnet.private: s.id]
-    security_groups  = [aws_security_group.sg.id]
+    security_groups  = [aws_security_group.web.id]
     assign_public_ip = false
   }
 
